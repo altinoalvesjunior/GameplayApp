@@ -3,14 +3,13 @@ import { createStackNavigator } from '@react-navigation/stack';
 
 import { Home } from '../screens/Home';
 import { AppointmentDetails } from '../screens/AppointmentDetails';
-import { SignIn } from '../screens/SignIn';
 import { AppointmentCreate } from '../screens/AppointmentCreate';
 
 import { theme } from '../global/styles/theme';
 
 const { Navigator, Screen } = createStackNavigator();
 
-export function AuthRoutes () {
+export function AppRoutes () {
     return (
         <Navigator headerMode="none" screenOptions={{ cardStyle: { backgroundColor: theme.colors.secondary100}}}>
             <Screen name="Home" component={ Home }/>
