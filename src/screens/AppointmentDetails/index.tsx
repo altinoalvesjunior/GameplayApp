@@ -10,7 +10,8 @@ import { Fontisto } from '@expo/vector-icons';
 import { theme } from "../../global/styles/theme";
 
 import BannerImg from '../../assets/banner.png'
-import { ImageBackground, Text, View, FlatList, Alert } from "react-native";
+import { ImageBackground, Text, View, FlatList, Alert, Share, Platform } from "react-native";
+import * as Linking from 'expo-linking';
 
 import { styles } from "./styles";
 import { useRoute } from "@react-navigation/native";
@@ -22,7 +23,7 @@ import { Load } from '../../components/Load';
 type Params = {
     guildSelected: AppointmentProps;
 }
-
+ 
 type GuildWidget = {
     id: string;
     name: string;
@@ -52,10 +53,25 @@ export function AppointmentDetails() {
         fetchGuildInfo();
     }, []);
 
+    function handleShareInvitation() {
+        const message = Platform.OS === 'ios' ?
+        `Junte-se a ${guildSelected.guild.name}`
+        : widget.instant_invite;
+
+        Share.share ({
+            message,
+            url: widget.instant_invite
+        });
+    }
+
+    function handleOpenGuild() {
+        Linking.openURL(widget.instant_invite);
+    }
+
     return (
         <Background>
-            <Header title="Detalhes" action={
-                <BorderlessButton>
+            <Header title="Detalhes" action={ guildSelected.guild.owner && 
+                <BorderlessButton onPress={handleShareInvitation}>
                     <Fontisto name="share" size={24} color={theme.colors.primary} />
                 </BorderlessButton>
             } />
@@ -74,7 +90,7 @@ export function AppointmentDetails() {
                 loading ? <Load />
                     :
                     <>
-                        <ListHeader title="Jogadores" subtitle={`Total ${widget.members.length}`} />
+                        <ListHeader title="Jogadores" subtitle={`Total ${widget.members.length ? widget.members.length : 0}`} />
 
                         <FlatList data={widget.members}
                             keyExtractor={item => item.id}
@@ -85,9 +101,12 @@ export function AppointmentDetails() {
                             style={styles.members}
                         />
 
-                        <View style={styles.footer}>
-                            <ButtonIcon title="Entrar na partida" />
-                        </View>
+                        {
+                            guildSelected.guild.owner && 
+                            <View style={styles.footer}>
+                                <ButtonIcon title="Entrar na partida" onPress={handleOpenGuild} />
+                            </View>
+                        }
                     </>
             }
         </Background>
